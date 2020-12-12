@@ -169,9 +169,9 @@ function get_request_count(p, d, item)
     end
 
     -- Don't keep autocrafting this item if it will just end up in logistics trash slots.
-    if p.character and p.auto_trash_filters[item] then
-        mi = math.min(mi, p.auto_trash_filters[item])
-    end
+--[[    if p.character and p.get_inventory(defines.inventory.character_trash).get_item_count(item) then
+        mi = math.min(mi, p.get_inventory(defines.inventory.character_trash).get_item_count(item))
+    end]]
 
 
     return mi
@@ -215,7 +215,7 @@ function build_request_iterator(p, d)
     local pl = p.mod_settings['logistics-requests-are-autocraft-requests'].value
     if pl == 'Always' or pl == 'When personal logistics requests are enabled' and p.character_personal_logistic_requests_enabled then
         d.personal_logistics_requests = d.personal_logistics_requests or {}
-        for i = 1, p.character_logistic_slot_count do
+        for i = 1, p.character.request_slot_count do
             local logi_request = p.get_personal_logistic_slot(i)
             if logi_request.min > 0 then
                 table.insert(logistics_requests, logi_request.name)
@@ -403,8 +403,13 @@ function change(event, positive)
     if changed then
         function settingsmessage(item)
             local trash_warning = ''
-            if p.character and p.auto_trash_filters[item] ~= nil and p.auto_trash_filters[item] < math.ceil(game.item_prototypes[item].stack_size*d.settings[item]) then
-                trash_warning = ' [Auto trash: '..p.auto_trash_filters[item]..']'
+            if p.character and
+                    p.get_inventory(defines.inventory.character_trash).get_item_count(item) ~= nil and
+                    p.get_inventory(defines.inventory.character_trash).get_item_count(item) < math.ceil(game.item_prototypes[item].stack_size*d.settings[item])
+            then
+                trash_warning = ' [Auto trash: '..p.get_inventory(defines.inventory.character_trash).get_item_count(item)..']'
+            else
+                trash_warning = ' [Not auto trash: '..p.get_inventory(defines.inventory.character_trash).get_item_count(item)..']'
             end
             -- Add the / 10 on bigger stacksize
             return '[item='..item..']: '..d.settings[item]..' stacks ('..math.ceil(pretend_stack_size(game.item_prototypes[item].stack_size)*d.settings[item])..' items)'..trash_warning

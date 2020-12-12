@@ -31,7 +31,7 @@ data:extend({
     -- localised_name = {"handyhands-shortcut.toggle"},
     icon =
     {
-      filename = "__HandyHands__/graphics/icon/shortcut-toggle.png",
+      filename = "__HandyHandsCommunity__/graphics/icon/shortcut-toggle.png",
       priority = "extra-high-no-scale",
       size = 144,
       scale = 0.2,
